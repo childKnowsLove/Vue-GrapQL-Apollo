@@ -17,6 +17,7 @@
         <tr>
           <th scope="col">id</th>
           <th scope="col">Title</th>
+          <th scope="col">Detail</th>
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
         </tr>
@@ -33,9 +34,13 @@
                         />
                     </div>
                 </td>
+            <td>
+              <a href="#" data-toggle="modal" :id="category.id" data-target="modalDetailBox" @click="showDetail">Detail</a>
+            </td>
             <td><a href="#" data-toggle="modal" :data-target="'#cate' + category.id">Update</a></td>
             <td><a href="#" @click='deleteCate($event, category.id)'>Delete</a></td>
           </tr>
+          <ShowDetailCate />
       </tbody>
     </table>
   </div>
@@ -44,19 +49,21 @@
 <script>
 import gql from 'graphql-tag';
 import UpdateCate from '@/components/UpdateCate.vue'
+import ShowDetailCate from '@/components/ShowDetailCate.vue'
 export default {
     components: {
-        UpdateCate
+        UpdateCate,
+        ShowDetailCate
     },
     data() {
         return {
           isCreate: false,
           isUpdate: false,
-          title: ''
+          title: '',
+          idBus: null
         }
     },
     created(){
-        console.log(this.getAllCategories);
     },
     apollo: {
         getAllCategories: {
@@ -77,7 +84,9 @@ export default {
         showUpdateForm() {
             this.isUpdate = true;
         },
-
+        showDetail(el) {
+            BusEvents.$emit('showBox', el.target.id);
+        },
         createCategory() {
             this.$apollo.mutate({
                 mutation: gql`
@@ -91,8 +100,6 @@ export default {
                 `,
             variables: { title: this.title },
             }).then(()=>{
-                this.$forceUpdate();
-                console.log(this.getAllCategories);
             });
             this.isCreate = false;
             location.reload();
@@ -110,8 +117,7 @@ export default {
             variables: { id: idCate },
             });
             location.reload();
-        }
-
+        },
     }
 };
 </script>

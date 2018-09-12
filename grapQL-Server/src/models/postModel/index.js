@@ -7,5 +7,17 @@ export const postModel = {
             return Post.create(dataPostInput);
         }
         return false;
+    },
+    deletePost: id => {
+        if (id) {
+            return Post.findOneAndRemove({id});
+        }
+        return fales;
+    },
+    updatePost: (id, inputPost) => {
+        if (id) {
+            return Post.findOneAndUpdate({ id }, { $set: inputPost }, { new: true });
+        }
+        return false;
     }
 }
