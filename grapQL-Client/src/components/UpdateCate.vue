@@ -34,22 +34,8 @@ export default {
     },
     methods: {
       updateCategory(event, idCate, title) {
-          this.isUpdate = false;
-          this.$apollo.mutate({
-              mutation: gql`
-                mutation ($id: ID!, $title: String!) {
-                  updateCategory(id: $id, input: {
-                      title: $title,
-                  })  {
-                      title
-                  }
-                }
-              `,
-              variables: { id: idCate, title: this.title }
-          });
+          this.$store.dispatch('updateCategoryOnDB', { id: idCate, title: this.title });
           this.hideModal();
-          this.$forceUpdate();
-          location.reload();
         },
         hideModal() {
           $('#cate' + this.idCategory).modal('hide');

@@ -8,7 +8,7 @@
                 <label for="title" class="sr-only">title</label>
                 <input type="text" v-model='title' class="form-control" id="title" placeholder="title">
               </div>
-              <button class="btn btn-success mb-2" @click='createCategory'>ok</button>
+              <button class="btn btn-success mb-2" @click='createCategory'>OK</button>
             </div>
         </div>
     </div>
@@ -22,7 +22,7 @@
         </tr>
       </thead>
       <tbody>
-            <tr v-for="category in getAllCategories" :category='category'>
+            <tr v-for="(category, index) in categoryList" :key='index'>
                 <td>{{ category.id }}</td>
                 <td>
                     <div>
@@ -34,7 +34,7 @@
                     </div>
                 </td>
             <td><a href="#" data-toggle="modal" :data-target="'#cate' + category.id">Update</a></td>
-            <td><a href="#" @click='deleteCate($event, category.id)'>Delete</a></td>
+            <td><a href="#" @click='deleteCate(category.id)'>Delete</a></td>
           </tr>
       </tbody>
     </table>
@@ -43,7 +43,8 @@
 
 <script>
 import gql from 'graphql-tag';
-import UpdateCate from '@/components/UpdateCate.vue'
+import UpdateCate from '@/components/UpdateCate.vue';
+import { mapGetters } from 'vuex';
 export default {
     components: {
         UpdateCate
@@ -52,11 +53,16 @@ export default {
         return {
           isCreate: false,
           isUpdate: false,
-          title: ''
+          title: '',
         }
     },
+    computed: {
+        ...mapGetters([
+            'categoryList'
+        ])
+    },
     created(){
-        console.log(this.getAllCategories);
+        this.$store.dispatch('fetchCatogoryList');
     },
     apollo: {
         getAllCategories: {
@@ -79,37 +85,28 @@ export default {
         },
 
         createCategory() {
-            this.$apollo.mutate({
-                mutation: gql`
-                  mutation ($title: String!) {
-                    createCategory(input: {
-                        title: $title,
-                    })  {
-                            title
-                    }
-                  }
-                `,
-            variables: { title: this.title },
-            }).then(()=>{
-                this.$forceUpdate();
-                console.log(this.getAllCategories);
-            });
-            this.isCreate = false;
-            location.reload();
+            this.$store.dispatch('createCategory', this.title);
         },
 
-        deleteCate(event, idCate) {
-            this.$apollo.mutate({
-                mutation: gql`
-                  mutation ($id: ID!) {
-                    deleteCategory(id:$id){
-                        id
-                    }
-                  }
-                `,
-            variables: { id: idCate },
-            });
-            location.reload();
+        getCategories() {
+            this.$apollo.query({
+              query: gql`
+              {
+                getAllCategories {
+                  id
+                  title
+                  description
+                }
+              }
+            `
+            }).then( result => {
+            //   this.categories = result.data.getAllCategories;
+            } )
+        },
+
+        deleteCate(catID) {
+            console.log('deleteCate: ', catID);
+            this.$store.dispatch('deleteCategory', catID);
         }
 
     }
