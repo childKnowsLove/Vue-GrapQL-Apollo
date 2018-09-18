@@ -11,6 +11,8 @@ import VueApollo from 'vue-apollo';
 Vue.config.productionTip = false;
 // Register the VueApollo plugin with Vue.
 Vue.use(VueApollo);
+window.Vue = require('vue');
+window.BusEvents = new Vue();
 
 // Create a new HttpLink to connect to your GraphQL API.
 // According to the Apollo docs, this should be an absolute URI.

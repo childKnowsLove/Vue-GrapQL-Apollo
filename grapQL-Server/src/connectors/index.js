@@ -18,7 +18,7 @@ import { postSchema } from './postSchema';
 // Category Schema
 categorySchema.virtual('posts', {
     ref: 'Post',
-    localField: '_id',
+    localField: 'id',
     foreignField: 'category_ids',
     justOne: false,
 });
