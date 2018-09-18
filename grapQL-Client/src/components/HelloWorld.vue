@@ -17,25 +17,30 @@
         <tr>
           <th scope="col">id</th>
           <th scope="col">Title</th>
+          <th scope="col">Detail</th>
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
-            <tr v-for="(category, index) in categoryList" :key='index'>
-                <td>{{ category.id }}</td>
-                <td>
-                    <div>
-                        <p v-if='!isUpdate'>{{ category.title }}</p>
-                        <UpdateCate
-                            :id-category="category.id"
-                            :cate-title="category.title"
-                        />
-                    </div>
-                </td>
-            <td><a href="#" data-toggle="modal" :data-target="'#cate' + category.id">Update</a></td>
-            <td><a href="#" @click='deleteCate(category.id)'>Delete</a></td>
+          <tr v-for="(category, index) in categoryList" :key='index'>
+              <td>{{ category.id }}</td>
+              <td>
+                  <div>
+                      <p v-if='!isUpdate'>{{ category.title }}</p>
+                      <UpdateCate
+                          :id-category="category.id"
+                          :cate-title="category.title"
+                      />
+                  </div>
+              </td>
+              <td>
+                <a href="#" data-toggle="modal" :id="category.id" @click="showDetail">Detail</a>
+              </td>
+              <td><a href="#" data-toggle="modal" :data-target="'#cate' + category.id">Update</a></td>
+              <td><a href="#" @click='deleteCate(category.id)'>Delete</a></td>
           </tr>
+          <ShowDetailCate />
       </tbody>
     </table>
   </div>
@@ -44,10 +49,12 @@
 <script>
 import gql from 'graphql-tag';
 import UpdateCate from '@/components/UpdateCate.vue';
+import ShowDetailCate from '@/components/ShowDetailCate.vue'
 import { mapGetters } from 'vuex';
 export default {
     components: {
-        UpdateCate
+        UpdateCate,
+        ShowDetailCate
     },
     data() {
         return {
@@ -105,10 +112,11 @@ export default {
         },
 
         deleteCate(catID) {
-            console.log('deleteCate: ', catID);
             this.$store.dispatch('deleteCategory', catID);
+        },
+        showDetail(el) {
+            BusEvents.$emit('showBox', el.target.id);
         }
-
     }
 };
 </script>
